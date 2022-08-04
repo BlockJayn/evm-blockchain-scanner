@@ -21,7 +21,7 @@ abiDecoder.addABI(abiduel);
 let latestKnownBlockNumber = -1;
 const blockTime = 7000;
 let transactionsArray;
-const heroAlertOnID = 33265;
+const alertOnID = 123456;
 
 /** ************************************************************** */
 
@@ -51,7 +51,7 @@ async function scanTransaction(transactionsArr) {
         /** If single Transaction has some content, check the Transaction */
         if (singleTxObject && singleTxObject !== null) {
 
-            // console.log(`🔎 Checking Tx: ${singleTxObjectTo}`);
+            console.log(`🔎 Checking Tx: ${singleTxObject.to}`);
             // console.log(singleTxObject)
 
             // singleTxObjectTo !== 'undefined' && 
@@ -66,11 +66,12 @@ async function scanTransaction(transactionsArr) {
                 const decodedData = abiDecoder.decodeMethod(encodedTxInput);
                 console.log(decodedData);
 
+                // Alert on specific activities in the contract
                 if (decodedData.name === 'enterDuelLobby') {
                     console.log('🧙 Used Hero(s)', decodedData.params[1].value);
 
-                    if (decodedData.params[1].value[0] === heroAlertOnID) {
-                        console.log('########################### FLO ENTERED THE LOBBY WITH HERO: ', decodedData.params[1].value[0]);
+                    if (decodedData.params[1].value[0] === alertOnID) {
+                        console.log('🔔 ID entered the Duel Lobby: ', decodedData.params[1].value[0]);
                     }
                 }
             }
@@ -82,6 +83,7 @@ async function scanTransaction(transactionsArr) {
 // Function triggered for every Block
 
 async function processBlock(blockNumber) {
+
     console.log(`\n🌐 Processing ${networkName}-Block: ${blockNumber}\n`);
     latestKnownBlockNumber = blockNumber;
 
@@ -114,7 +116,7 @@ async function processBlock(blockNumber) {
 
 
 // This function is called every blockTime
-// check the current block-nr and orders the processing of the new block(s)
+// checks the current block-nr and manages processing of the new block(s)
 
 async function checkCurrentBlock() {
 
